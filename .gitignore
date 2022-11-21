@@ -1,0 +1,5 @@
+/target
+*flatc
+*.json
+*.trpfs
+*.trpfd
