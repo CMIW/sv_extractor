@@ -23,10 +23,10 @@ pub struct Args {
 pub enum ExtractionOption{
 	/// TRPFS Extraction
 	TRPFS,
-	/// TRPAK Extraction
-	TRPAK,
-	/// Full Extraction (Note: this might take a while)
-	Full,
+	// TRPAK Extraction
+	//TRPAK,
+	// Full Extraction (Note: this might take a while)
+	//Full,
 }
 
 /// CLI state that holds all the important information, like paths and variables that I
@@ -42,6 +42,7 @@ pub struct State {
 	pub trpfd: String,
 	pub fs_trpfs: String,
 	pub names_hash: HashMap<String, String>,
+	pub hash_dict: HashMap<String, u128>,
 	pub init_offset: u64,
 }
 
@@ -59,11 +60,12 @@ impl State {
 			output: args.output.clone(), 
 			schemas: env::current_dir().unwrap().join("schemas").to_str().unwrap().to_string(),
 			flatc: flatc,
-			info: Path::new(&args.output).join("info").to_str().unwrap().to_string(),
+			info: env::current_dir().unwrap().join("info").to_str().unwrap().to_string(),
 			trpfs: Path::new(&args.romfs).join("arc/data.trpfs").to_str().unwrap().to_string(),
     		trpfd: Path::new(&args.romfs).join("arc/data.trpfd").to_str().unwrap().to_string(),
-    		fs_trpfs: Path::new(&args.output).join("info/fs_data_separated.trpfs").to_str().unwrap().to_string(),
+    		fs_trpfs: env::current_dir().unwrap().join("info/fs_data_separated.trpfs").to_str().unwrap().to_string(),
     		names_hash: HashMap::new(),
+    		hash_dict: HashMap::new(),
     		..Default::default()
 		}
 	}

@@ -40,7 +40,7 @@ fn main() {
 		        process::exit(1);
 		    }); 
     	},
-    	ExtractionOption::TRPAK => {},
-    	ExtractionOption::Full => {},
+    	//ExtractionOption::TRPAK => {},
+    	//ExtractionOption::Full => {},
     }
 }

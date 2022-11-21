@@ -16,7 +16,7 @@ pub fn extract(mut state: State) -> Result<(), SVExtractorError> {
     extract_trpfs_flatc(&state)?;
     extract_trpfd_flatc(&state)?;
     extract_trpfd(&mut state)?;
-    write_files(&state)?;
+    write_files(&mut state)?;
     Ok(())
 }
 
@@ -63,11 +63,7 @@ fn extract_trpfs(state: &mut State) -> Result<(), SVExtractorError> {
 	let mut content_buffer = vec![0u8; content_size.try_into()?];
 	reader.read_exact(&mut content_buffer)?;
 
-    // create the output file and write to it
-    if !Path::new(&state.fs_trpfs).exists() {
-        create_dir_all(Path::new(&state.fs_trpfs).parent().unwrap())?;
-    }
-	let mut f1 = File::create(&state.fs_trpfs)?;
+    let mut f1 = File::create(&state.fs_trpfs)?;
     f1.write_all(&content_buffer)?;
 	
 	Ok(())
@@ -85,10 +81,11 @@ fn extract_trpfd(state: &mut State) -> Result<(), SVExtractorError> {
     Ok(())
 }
 
-fn write_files(state: &State) -> Result<(), SVExtractorError> {
-    println!("Extracting files...");
+fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
+    println!("Extracting files to {} ...", &state.output);
     let trpfd_str = read_to_string(format!("{}/data.json",&state.info))?;
     let trpfs_str = read_to_string(format!("{}/fs_data_separated.json",&state.info))?;
+    let mut data_reader = BufReader::new(File::open(&state.trpfs)?);
 
     let trpfd: TRPFD = serde_json::from_str(&trpfd_str)?;
     let mut trpfs: TRPFS = serde_json::from_str(&trpfs_str)?;
@@ -101,8 +98,34 @@ fn write_files(state: &State) -> Result<(), SVExtractorError> {
         let offset = trpfs.file_offsets[i];
         let end_offset = trpfs.file_offsets[i + 1];
         let name_hash = trpfs.hashes[i];
-    }
 
+        let mut path: String = "ERROR_NO_MATCHING_FILENAME".to_string();
+        for j in &trpfd.paths {
+            if name_hash == fnv1a64(j, &mut state.hash_dict) {
+                if state.hash_dict.contains_key(j) {
+                    path = format!("{}/{}", &state.output, &state.hash_dict[j]);
+                }
+                else {
+                    path = format!("{}/{}", &state.output, j);
+                }
+                break;
+            }
+        }
+        //println!("{}", path);
+        // create the output file and write to it
+        if !Path::new(&path).exists() {
+            create_dir_all(Path::new(&path).parent().unwrap())?;
+        }
+
+        let mut out_file_buff = vec![0u8; (end_offset - offset).try_into()?];
+        data_reader.seek(SeekFrom::Start(offset.try_into()?))?;
+        data_reader.read_exact(&mut out_file_buff)?;
+
+        let mut out_file = File::create(path)?;
+        out_file.write_all(&out_file_buff)?;
+    
+    }
+    println!("Extraction complete!");
     Ok(())
 }
 
@@ -140,18 +163,35 @@ fn extract_trpfd_flatc(state: &State) -> Result<(), SVExtractorError> {
     Ok(())
 }
 
+fn fnv1a64(_str: &str, hash_map: &mut HashMap<String, u128>) -> u64 {
+    if hash_map.contains_key(_str) {
+        return hash_map[_str].try_into().unwrap();
+    }
+
+    let fnv_prime: u128 = 1099511628211;
+    let mut offset_basis: u128 = 14695981039346656837;
+
+    for i in _str.chars() {
+        offset_basis ^= i as u128; // apply a bitwise XOR
+        offset_basis = (offset_basis * fnv_prime) % (2_u128.pow(64));
+    }
+
+    hash_map.insert(_str.to_string(), offset_basis);
+
+    offset_basis.try_into().unwrap()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn FNV1a64_hash_test(){
-        let HASH_DICT: HashMap<String, u64> = HashMap::new();
+    fn fnv1a64_hash_test(){
+        let mut hash_dict: HashMap<String, u128> = HashMap::new();
     	let value = "pm0081_00_00_20146_stepout01.traef";
-        let FNV1a64_res: u64 = 8206631493468059913;
-        let FNV1a64_hex: u64 = 0x71e3cfdcdab27909;
+        let _fnv1a64_res: u64 = 8206631493468059913;
+        let fnv1a64_hex: u64 = 0x71e3cfdcdab27909;
 
-        
-        
+        assert_eq!(fnv1a64_hex, fnv1a64(value, &hash_dict));
 	}
 }
