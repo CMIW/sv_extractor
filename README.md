@@ -21,12 +21,12 @@ This tool is based on [SCVI_Extract](https://github.com/psthrn42/SCVI_Extract). 
 
 Linux example:
 ```
-./sv_extracr --romfs <path to romfs folder> --output <path> --extraction <extraction option>
+./sv_extraor --romfs <path to romfs folder> --output <path> --extraction <extraction option>
 ```
 
 Linux example:
 ```
-sv_extracr.exe --romfs <path to romfs folder> --output <path> --extraction <extraction option>
+sv_extraor.exe --romfs <path to romfs folder> --output <path> --extraction <extraction option>
 ```
 
 ## Extraction options
