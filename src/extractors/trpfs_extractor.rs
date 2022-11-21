@@ -146,6 +146,7 @@ mod tests {
 
     #[test]
     fn FNV1a64_hash_test(){
+        let HASH_DICT: HashMap<String, u64> = HashMap::new();
     	let value = "pm0081_00_00_20146_stepout01.traef";
         let FNV1a64_res: u64 = 8206631493468059913;
         let FNV1a64_hex: u64 = 0x71e3cfdcdab27909;
