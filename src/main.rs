@@ -41,6 +41,6 @@ fn main() {
 		    }); 
     	},
     	//ExtractionOption::TRPAK => {},
-    	//ExtractionOption::Full => {},
+    	//ExtractionOption::Full_TRPFS => {},
     }
 }

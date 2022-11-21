@@ -26,7 +26,7 @@ pub enum ExtractionOption{
 	// TRPAK Extraction
 	//TRPAK,
 	// Full Extraction (Note: this might take a while)
-	//Full,
+	//Full_TRPFS,
 }
 
 /// CLI state that holds all the important information, like paths and variables that I
@@ -41,7 +41,7 @@ pub struct State {
 	pub trpfs: String,
 	pub trpfd: String,
 	pub fs_trpfs: String,
-	pub names_hash: HashMap<String, String>,
+	pub names_dict: HashMap<String, String>,
 	pub hash_dict: HashMap<String, u128>,
 	pub init_offset: u64,
 }
@@ -64,7 +64,7 @@ impl State {
 			trpfs: Path::new(&args.romfs).join("arc/data.trpfs").to_str().unwrap().to_string(),
     		trpfd: Path::new(&args.romfs).join("arc/data.trpfd").to_str().unwrap().to_string(),
     		fs_trpfs: env::current_dir().unwrap().join("info/fs_data_separated.trpfs").to_str().unwrap().to_string(),
-    		names_hash: HashMap::new(),
+    		names_dict: HashMap::new(),
     		hash_dict: HashMap::new(),
     		..Default::default()
 		}

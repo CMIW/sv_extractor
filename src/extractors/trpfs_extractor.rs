@@ -1,5 +1,10 @@
+/// To extract the .trpfs we read the u64 pointer as a start offset form the second 
+/// 8 bytes of the file. Then we read the u64 pointer as a end of file offset form 
+/// the last 8 bytes of the file. Those two offsets are used to extract the content 
+/// of the .trpfs file to a new .trpfs file without the header. Deserialize the new 
+/// .trpfs file into a .json with flatc (~6GB files are flatbuffers).
+
 use std::path::Path;
-//use serde_json::{Value};
 use std::process::Command;
 use std::collections::HashMap;
 use std::io::{Read, Seek, Write};
@@ -75,7 +80,7 @@ fn extract_trpfd(state: &mut State) -> Result<(), SVExtractorError> {
     let cnames_file = BufReader::new(File::open(format!("{}/names_changed.txt",&state.info))?).lines();
     
     for (onames, cnames) in onames_file.zip(cnames_file){
-        state.names_hash.insert(onames.unwrap(), cnames.unwrap());
+        state.names_dict.insert(onames.unwrap(), cnames.unwrap());
     }
 
     Ok(())
@@ -102,8 +107,9 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
         let mut path: String = "ERROR_NO_MATCHING_FILENAME".to_string();
         for j in &trpfd.paths {
             if name_hash == fnv1a64(j, &mut state.hash_dict) {
+                println!("{:?}", j);
                 if state.hash_dict.contains_key(j) {
-                    path = format!("{}/{}", &state.output, &state.hash_dict[j]);
+                    path = format!("{}/{}", &state.output, &state.names_dict[j]);
                 }
                 else {
                     path = format!("{}/{}", &state.output, j);
@@ -111,7 +117,6 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
                 break;
             }
         }
-        //println!("{}", path);
         // create the output file and write to it
         if !Path::new(&path).exists() {
             create_dir_all(Path::new(&path).parent().unwrap())?;
@@ -129,6 +134,7 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
     Ok(())
 }
 
+// Run the flatc extraction command
 fn extract_trpfs_flatc(state: & State) -> Result<(), SVExtractorError> {
     // Set the paths arguments for the flatc tool
     let trpfs_schema = format!("{}/trpfs.fbs",&state.schemas);
@@ -146,6 +152,7 @@ fn extract_trpfs_flatc(state: & State) -> Result<(), SVExtractorError> {
     Ok(())
 }
 
+// Run the flatc extraction command
 fn extract_trpfd_flatc(state: &State) -> Result<(), SVExtractorError> {
     // Set the paths arguments for the flatc tool
     let trpfd_schema = format!("{}/trpfd.fbs",&state.schemas);

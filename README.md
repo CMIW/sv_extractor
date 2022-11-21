@@ -31,3 +31,4 @@ sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction <ex
 
 ## Extraction options
 0. trpfs
+1. full_trpfs

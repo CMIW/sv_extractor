@@ -13,6 +13,7 @@ arc/world/scene/parts/field/room/interior_common/interior_pattern_house02_0/inte
 arc/world/scene/parts/field/room/battlebg_sch_ground01/battlebg_sch_ground01_obj_0/battlebg_sch_ground01_obj_0.trscn.trpak
 arc/world/scene/parts/field/room/battlebg_rival_backcourt_0/battlebg_rival_backcourt_0.trscn.trpak
 arc/world/scene/parts/field/room/battlebg_lastrival_c01_0/battlebg_lastrival_c01_0.trscn.trpak
+arc/world/scene/parts/field/room/battlebg_a_t06_g10/battlebg_a_t06_g10_0.trscn.trpak
 arc/world/scene/parts/field/room/battlebg_a_t06_g10/battlebg_a_t06_g10_obj_0/battlebg_a_t06_g10_obj_0.trscn.trpak
 arc/world/scene/parts/field/room/battlebg_a_pl11/battlebg_a_pl11_obj_0/battlebg_a_pl11_obj_0.trscn.trpak
 arc/world/scene/parts/field/room/a_w23_i23/a_w23_i23_camera_0/a_w23_i23_camera_0.trscn.trpak
@@ -1231,6 +1232,7 @@ arc/world/data/pokemon/partner/partner_movement_data/0003_00_00.bin.trpak
 arc/world/data/pokemon/partner/partner_movement_data/0002_00_00.bin.trpak
 arc/world/data/pokemon/partner/partner_movement_data/0001_00_00.bin.trpak
 arc/world/data/pokemon/collision/pokemon_collision_unique_data/0004_00_00.bin.trpak
+arc/world/data/pokemon/ai_action/template/action_template_13/action_template_13_array.bfbs.trpak
 arc/world/data/pokemon/ai_action/template/action_template_14/action_template_14_array.bfbs.trpak
 arc/world/data/pokemon/ai/pokemon_species_table/0999_04_00.bin.trpak
 arc/world/data/pokemon/ai/pokemon_species_table/0999_03_00.bin.trpak
@@ -12153,6 +12155,7 @@ arc/effect/demo/sd8030_circlewarp/sd8030_circle_effect_0.trsot.trpak
 arc/effect/demo/sd8020_clearclear/sd8020_clear_kirakira02.ptcl.trpak
 arc/effect/demo/sd8014_eateat/sd8014_eat_1.trsot.trpak
 arc/effect/demo/ev9999test/test_axis_srt_follow.ptcl.trpak
+arc/effect/demo/evd410/d410_c03_env_b.ptcl.trpak
 arc/effect/demo/evd460/d460_wormhole03.ptcl.trpak
 arc/effect/demo/evd450/d450_c17_poke4_b.ptcl.trpak
 arc/effect/demo/evd440/d440_jewelry02.ptcl.trpak
@@ -15757,6 +15760,7 @@ arc/appli/data/net_btl/net_btl_team_00_fre.arc.trpak
 arc/appli/data/net_btl/net_btl_team_00_eng.arc.trpak
 arc/appli/data/net_btl/net_btl_header_00.arc.trpak
 arc/appli/data/mystery/view_mystery_complete_00.truiv.trpak
+arc/appli/data/mystery/mystery_confirm_power_00.arc.trpak
 arc/appli/data/mystery/mystery_complete_00.arc.trpak
 arc/appli/data/msg_sub/state_msg_sub.truis.trpak
 arc/appli/data/msg_sub/msg_sub_body_00.arc.trpak
@@ -15962,6 +15966,8 @@ arc/appli/data/btlspot/btlspot_info_official_00_ger.arc.trpak
 arc/appli/data/btlspot/btlspot_info_official_00_fre.arc.trpak
 arc/appli/data/btlspot/btlspot_info_official_00_eng.arc.trpak
 arc/appli/data/btl_team/view_btl_team_confirmation_00.truiv.trpak
+arc/appli/data/btl_team/btl_team_confirmation_00.arc.trpak
+arc/appli/data/btl_team/btl_team_select_00.arc.trpak
 arc/appli/data/btl_team/btl_team_confirmation_00.arc.trpak
 arc/appli/data/btl_raid/btl_raid_rooting_list.truis.trpak
 arc/appli/data/btl_raid/btl_raid_emote_00.arc.trpak
