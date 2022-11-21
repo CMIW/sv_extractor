@@ -104,30 +104,36 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
         let end_offset = trpfs.file_offsets[i + 1];
         let name_hash = trpfs.hashes[i];
 
-        let mut path: String = "ERROR_NO_MATCHING_FILENAME".to_string();
+        // just in case the there is no path 
+        let mut path: Option<String> = None;
         for j in &trpfd.paths {
             if name_hash == fnv1a64(j, &mut state.hash_dict) {
                 println!("{:?}", j);
                 if state.hash_dict.contains_key(j) {
-                    path = format!("{}/{}", &state.output, &state.names_dict[j]);
+                    path = Some(format!("{}/{}", &state.output, &state.names_dict[j]));
                 }
                 else {
-                    path = format!("{}/{}", &state.output, j);
+                    path = Some(format!("{}/{}", &state.output, j));
                 }
                 break;
             }
         }
-        // create the output file and write to it
-        if !Path::new(&path).exists() {
-            create_dir_all(Path::new(&path).parent().unwrap())?;
+        // create the output file and write to it (if path != None)
+        match path {
+            Some(path_str) => {
+                if !Path::new(&path_str).exists() {
+                    create_dir_all(Path::new(&path_str).parent().unwrap())?;
+                }
+
+                let mut out_file_buff = vec![0u8; (end_offset - offset).try_into()?];
+                data_reader.seek(SeekFrom::Start(offset.try_into()?))?;
+                data_reader.read_exact(&mut out_file_buff)?;
+
+                let mut out_file = File::create(path_str)?;
+                out_file.write_all(&out_file_buff)?;
+            }
+            None => {  }
         }
-
-        let mut out_file_buff = vec![0u8; (end_offset - offset).try_into()?];
-        data_reader.seek(SeekFrom::Start(offset.try_into()?))?;
-        data_reader.read_exact(&mut out_file_buff)?;
-
-        let mut out_file = File::create(path)?;
-        out_file.write_all(&out_file_buff)?;
     
     }
     println!("Extraction complete!");
