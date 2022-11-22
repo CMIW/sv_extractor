@@ -42,6 +42,7 @@ fn write_files(_state: &State, file_str: &String) -> Result<(), SVExtractorError
         let data = trpak.files[i].data.clone();
         
         if trpak.files[i].compression_type == Compression::OODLE {
+            break;
             //oodle_decompress(&state, &data, &data.len(), &trpak.files[i].decompressed_size);
         }
 
