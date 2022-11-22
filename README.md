@@ -21,12 +21,12 @@ Right now, for the .trpak files, it can only unpack the files without oodle lz c
 2. Place the files ['flatc.exe'](https://github.com/google/flatbuffers/releases)<!--, 'oo2core_6_win64.dll' --> (for windows) or ['flatc'](https://github.com/google/flatbuffers/releases) (for linux) in the [bin](/bin) folder.
 3. Open a terminal where you have the binaries and run the following command:
 
-Linux example:
+Linux example for trpfs:
 ```
 ./sv_extractor --romfs <path to romfs folder> --output <path> --extraction <extraction option>
 ```
 
-Linux example:
+Linux example for trpfs:
 ```
 sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction <extraction option>
 ```
