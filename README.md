@@ -26,7 +26,7 @@ Linux example for trpfs:
 ./sv_extractor --romfs <path to romfs folder> --output <path> --extraction <extraction option>
 ```
 
-Linux example for trpfs:
+Windows example for trpfs:
 ```
 sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction <extraction option>
 ```
