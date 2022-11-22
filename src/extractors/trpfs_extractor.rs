@@ -16,12 +16,12 @@ use crate::error_handler::SVExtractorError;
 
 const FS_MAGIC: &str = "ONEPACK";
 
-pub fn extract(mut state: State) -> Result<(), SVExtractorError> {
-    extract_trpfs(&mut state)?;
-    extract_trpfs_flatc(&state)?;
-    extract_trpfd_flatc(&state)?;
-    extract_trpfd(&mut state)?;
-    write_files(&mut state)?;
+pub fn extract(state: &mut State) -> Result<(), SVExtractorError> {
+    extract_trpfs(state)?;
+    extract_trpfs_flatc(state)?;
+    extract_trpfd_flatc(state)?;
+    extract_trpfd(state)?;
+    write_files(state)?;
     Ok(())
 }
 
@@ -91,7 +91,6 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
     let trpfd_str = read_to_string(format!("{}/data.json",&state.info))?;
     let trpfs_str = read_to_string(format!("{}/fs_data_separated.json",&state.info))?;
     let mut data_reader = BufReader::new(File::open(&state.trpfs)?);
-
     let trpfd: TRPFD = serde_json::from_str(&trpfd_str)?;
     let mut trpfs: TRPFS = serde_json::from_str(&trpfs_str)?;
 
@@ -108,8 +107,7 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
         let mut path: Option<String> = None;
         for j in &trpfd.paths {
             if name_hash == fnv1a64(j, &mut state.hash_dict) {
-                println!("{:?}", j);
-                if state.hash_dict.contains_key(j) {
+                if state.names_dict.contains_key(j) {
                     path = Some(format!("{}/{}", &state.output, &state.names_dict[j]));
                 }
                 else {
@@ -136,7 +134,6 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
         }
     
     }
-    println!("Extraction complete!");
     Ok(())
 }
 
@@ -153,7 +150,7 @@ fn extract_trpfs_flatc(state: & State) -> Result<(), SVExtractorError> {
     .arg("--defaults-json")
     .arg("-t").arg(trpfs_schema)
     .arg("--").arg(&state.fs_trpfs)
-    .spawn()?;
+    .spawn()?.wait().unwrap();
 
     Ok(())
 }
@@ -171,7 +168,7 @@ fn extract_trpfd_flatc(state: &State) -> Result<(), SVExtractorError> {
     .arg("--defaults-json")
     .arg("-t").arg(trpfd_schema)
     .arg("--").arg(&state.trpfd)
-    .spawn()?;
+    .spawn()?.wait().unwrap();
 
     Ok(())
 }

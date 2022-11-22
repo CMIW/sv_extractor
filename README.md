@@ -7,6 +7,8 @@
 
 This tool is based on [SCVI_Extract](https://github.com/psthrn42/SCVI_Extract). This tool was created to make extracting data from SV binary files easier by making an executable CLI instead of a python script. It should also support both windows and linux.
 
+Right now, for the .trpak files, it can only unpack the files without oodle lz compression. To decompress those a windows only dll is needed. For that [SCVI_Extract](https://github.com/psthrn42/SCVI_Extract) works better but still is windows only.
+
 ## Requirements
 
 0. ['flatc.exe'](https://github.com/google/flatbuffers/releases) and 'oo2core_6_win64.dll' for windows
@@ -31,4 +33,5 @@ sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction <ex
 
 ## Extraction options
 0. trpfs
-1. full_trpfs
+1. trpak
+2. full

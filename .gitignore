@@ -1,4 +1,5 @@
 /target
+/output
 *flatc
 *.json
 *.trpfs

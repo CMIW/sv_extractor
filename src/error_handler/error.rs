@@ -13,6 +13,12 @@ pub enum SVExtractorError{
         path: String,
     },
 
+    #[error("No flatc binaries where found in the /bin folder")]
+    Missingfltac,
+
+    #[error("No oo2core dynamic library was found in the /bin folder")]
+    Missingoo2core,
+
 	/// Represents all other cases of `std::io::Error`.
     #[error(transparent)]
     IOError(#[from] std::io::Error),
