@@ -18,7 +18,7 @@ Right now, for the .trpak files, it can only unpack the files without oodle lz c
 
 0. Download the binaries for your system from the [latest release](https://github.com/CMIW/sv_extractor/releases). 
 1. Extract the binaries from the zip file.
-2. Place the files ['flatc.exe'](https://github.com/google/flatbuffers/releases), 'oo2core_6_win64.dll' (for windows) and ['flatc'](https://github.com/google/flatbuffers/releases) (for linux) in the [bin](/bin) folder.
+2. Place the files ['flatc.exe'](https://github.com/google/flatbuffers/releases)<!--, 'oo2core_6_win64.dll' --> (for windows) or ['flatc'](https://github.com/google/flatbuffers/releases) (for linux) in the [bin](/bin) folder.
 3. Open a terminal where you have the binaries and run the following command:
 
 Linux example:
