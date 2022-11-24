@@ -18,32 +18,28 @@ None, just download the binaries for your system from the [latest release](https
 2. Place the files ['flatc.exe'](https://github.com/google/flatbuffers/releases) (for windows) or ['flatc'](https://github.com/google/flatbuffers/releases) (for linux) in the [bin](/bin) folder.
 3. Open a terminal where you have the binaries and run the following command:
 
-Linux example for trpfs:
+Linux examples:
 ```
 ./sv_extractor --romfs <path to romfs folder> --output <path> --extraction trpfs
 ```
 
-Windows example for trpfs:
-```
-sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction trpfs
-```
-
-Linux example for trpak:
 ```
 ./sv_extractor --trpak <path to trpak> --output <path> --extraction trpak
 ```
 
-Windows example for trpak:
-```
-sv_extractor.exe --trpak <path to trpak> --output <path> --extraction trpak
-```
-
-Linux example for full:
 ```
 ./sv_extractor --romfs <path to romfs folder> --output <path> --extraction full
 ```
 
-Windows example for full:
+Windows examples:
+```
+sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction trpfs
+```
+
+```
+sv_extractor.exe --trpak <path to trpak> --output <path> --extraction trpak
+```
+
 ```
 sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction full
 ```
