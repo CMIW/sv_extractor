@@ -14,7 +14,6 @@ fn main() {
 
     // Create a new app state
     let mut state = State::new(&args);
-    //println!("{:#?}", state);
 
     match args.extraction {
     	ExtractionOption::TRPFS => { 

@@ -43,11 +43,9 @@ fn write_files(file_path: &String) -> Result<(), SVExtractorError> {
     // Parse the rtpfs and deserialize it with flatbuffers
     let mut trpak_buffer = Vec::<u8>::new();
 
-    let _trpak = read_rtpak(file_path, &mut trpak_buffer)?;
-    let trpak_hashes = vector_to_vec64(_trpak.clone().hashes().unwrap());
-    let trpak_files = _trpak.clone().files().unwrap();
-
-    //println!("{:?}", trpak_files.len());
+    let trpak = read_rtpak(file_path, &mut trpak_buffer)?;
+    let trpak_hashes = vector_to_vec64(trpak.clone().hashes().unwrap());
+    let trpak_files = trpak.clone().files().unwrap();
 
     for i in 0..trpak_files.len() {
         let new_file = Path::new(&file_path).with_extension("").join(format!("{:x}",trpak_hashes[i]));

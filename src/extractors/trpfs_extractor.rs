@@ -1,8 +1,8 @@
 /// To extract the .trpfs we read the u64 pointer as a start offset form the second 
 /// 8 bytes of the file. Then we read the u64 pointer as a end of file offset form 
 /// the last 8 bytes of the file. Those two offsets are used to extract the content 
-/// of the .trpfs file to a new .trpfs file without the header. Deserialize the new 
-/// .trpfs file into a .json with flatc (~6GB files are flatbuffers).
+/// of the .trpfs file to a new .trpfs file without the header. 
+/// The ~6GB files are flatbuffers.
 
 use std::path::Path;
 use flatbuffers::Vector;
@@ -20,8 +20,6 @@ const FS_MAGIC: &str = "ONEPACK";
 
 pub fn extract(state: &mut State) -> Result<(), SVExtractorError> {
     extract_trpfs(state)?;
-    //extract_trpfs_flatc(state)?;
-    //extract_trpfd_flatc(state)?;
     extract_trpfd(state)?;
     write_files(state)?;
     Ok(())
@@ -98,6 +96,7 @@ fn vector_to_vec(vector: Vector<'_, u64>) -> Vec<u64> {
     return vec;
 }
 
+// Reads the .rtpfs file and deserialize it into a TRPFS struct
 fn read_rtpfs<'a>(rtpfs_path: &String, trpfs_buffer: &'a mut Vec::<u8>) -> Result<TRPFS<'a>, SVExtractorError> {
     // Parse the rtpfs and deserialize it with flatbuffers
     let mut trpfs_reader = BufReader::new(File::open(&rtpfs_path)?);
@@ -106,6 +105,7 @@ fn read_rtpfs<'a>(rtpfs_path: &String, trpfs_buffer: &'a mut Vec::<u8>) -> Resul
     return Ok(root_as_trpfs(trpfs_buffer).unwrap());
 }
 
+// Reads the .rtpfd file and deserialize it into a TRPFd struct
 fn read_rtpfd<'a>(rtpfd_path: &String, trpfd_buffer: &'a mut Vec::<u8>) -> Result<TRPFD<'a>, SVExtractorError> {
     // Parse the rtpfs and deserialize it with flatbuffers
     let mut trpfd_reader = BufReader::new(File::open(&rtpfd_path)?);
@@ -116,6 +116,7 @@ fn read_rtpfd<'a>(rtpfd_path: &String, trpfd_buffer: &'a mut Vec::<u8>) -> Resul
     return Ok(trpfd);
 }
 
+// Writes all the files decompressed from the .rtpfs and .rtpfd files
 fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
     println!("Extracting files to {} ...", &state.output);
     let mut data_reader = BufReader::new(File::open(&state.trpfs)?);
@@ -128,7 +129,9 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
     // Get the file offsets
     let mut trpfs_offsets = vector_to_vec(trpfs.clone().file_offsets().unwrap());
 
-    // We get the len here because later will append the init offset to the list
+    // We get the len here because later will append the init offset to the list and 
+    // read an offest ahead, this avoid an index out of range error and we also the 
+    // the end of file offset to write the last file
     let file_count = trpfs_offsets.len();
 
     trpfs_offsets.push(state.init_offset);
@@ -143,7 +146,7 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
         let end_offset = trpfs_offsets[i + 1];
         let name_hash = trpfs_hashes[i];
 
-        // just in case the there is no path 
+        // Just in case the there is no path 
         let mut path: Option<String> = None;
         for j in &trpfd.paths().unwrap() {
             if name_hash == fnv1a64(j, &mut state.hash_dict) {
@@ -156,9 +159,10 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
                 break;
             }
         }
-        // create the output file and write to it (if path != None)
+        // Create the output file and write to it, if the path is empty ignore it
         match path {
             Some(path_str) => {
+                // Create the parent path if it doesn't exists
                 if !Path::new(&path_str).exists() {
                     create_dir_all(Path::new(&path_str).parent().unwrap())?;
                 }
