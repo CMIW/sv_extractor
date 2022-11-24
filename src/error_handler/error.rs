@@ -19,6 +19,9 @@ pub enum SVExtractorError{
     #[error("No oo2core dynamic library was found in the /bin folder")]
     Missingoo2core,
 
+    #[error("Failed to decompress the data")]
+    OodleDecompressError,
+
 	/// Represents all other cases of `std::io::Error`.
     #[error(transparent)]
     IOError(#[from] std::io::Error),
