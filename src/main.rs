@@ -16,17 +16,7 @@ fn main() {
     let mut state = State::new(&args);
     //println!("{:#?}", state);
 
-    if !Path::new(&state.flatc).exists() {
-		eprintln!("{}", SVExtractorError::Missingfltac);
-		process::exit(1);
-	}
-
-	/*state.find_oo2core().unwrap_or_else(|err| {
-		eprintln!("{}", err);
-		process::exit(1);
-	});*/ 
-
-	match args.extraction {
+    match args.extraction {
     	ExtractionOption::TRPFS => { 
     		// Verify that the romfs path exists
 		    if let Some(path) = &args.romfs {
@@ -64,7 +54,7 @@ fn main() {
 		    }
 		    
 		    // Execute the extraction
-    		trpak_extractor::extract(&mut state, &args.trpak.unwrap()).unwrap_or_else(|err| {
+    		trpak_extractor::extract(&args.trpak.unwrap()).unwrap_or_else(|err| {
 		        eprintln!("{}", err);
 		        process::exit(1);
 		    }); 

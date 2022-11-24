@@ -9,7 +9,7 @@ This tool is based on [SCVI_Extract](https://github.com/psthrn42/SCVI_Extract). 
 
 ## Requirements
 
-0. ['flatc'](https://github.com/google/flatbuffers/releases) for linux or ['flatc.exe'](https://github.com/google/flatbuffers/releases) for windows. I'm working on removing this dependency.
+None, just download the binaries for your system from the [latest release](https://github.com/CMIW/sv_extractor/releases/latest).
 
 ## How to use the tool
 
@@ -36,6 +36,16 @@ Linux example for trpak:
 Windows example for trpak:
 ```
 sv_extractor.exe --trpak <path to trpak> --output <path> --extraction trpak
+```
+
+Linux example for full:
+```
+./sv_extractor --romfs <path to romfs folder> --output <path> --extraction full
+```
+
+Windows example for full:
+```
+sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction full
 ```
 
 ## Extraction options

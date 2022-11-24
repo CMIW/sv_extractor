@@ -10,7 +10,7 @@ pub fn extract(state: &mut State) -> Result<(), SVExtractorError> {
     println!("This will take a while, extracting .trpak files...");
     for (_oname, cname) in files_dict {
     	let path = Path::new(&state.output).join(&cname).to_str().unwrap().to_string();
-    	trpak_extractor::extract(state, &path)?;
+    	trpak_extractor::extract(&path)?;
     }
     Ok(())
 }

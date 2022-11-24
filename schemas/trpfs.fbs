@@ -1,4 +1,5 @@
 file_extension "trpfs";
+namespace trpfs;
 
 // The first 8 bytes contain the magic value 'ONEPACK'
 // The next 8 bytes contain the offset to the root table (0x0141E72FC0 in leaked scarlet version)

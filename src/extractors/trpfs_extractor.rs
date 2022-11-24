@@ -5,21 +5,23 @@
 /// .trpfs file into a .json with flatc (~6GB files are flatbuffers).
 
 use std::path::Path;
-use std::process::Command;
+use flatbuffers::Vector;
 use std::collections::HashMap;
 use std::io::{Read, Seek, Write};
+use std::fs::{File, create_dir_all};
 use std::io::{SeekFrom, BufReader, BufRead};
-use std::fs::{File, create_dir_all, read_to_string};
 
-use crate::cli::{State, TRPFS, TRPFD};
+use crate::cli::{State};
 use crate::error_handler::SVExtractorError;
+use crate::schemas::trpfs_generated::trpfs::*;
+use crate::schemas::trpfd_generated::trpfd::*;
 
 const FS_MAGIC: &str = "ONEPACK";
 
 pub fn extract(state: &mut State) -> Result<(), SVExtractorError> {
     extract_trpfs(state)?;
-    extract_trpfs_flatc(state)?;
-    extract_trpfd_flatc(state)?;
+    //extract_trpfs_flatc(state)?;
+    //extract_trpfd_flatc(state)?;
     extract_trpfd(state)?;
     write_files(state)?;
     Ok(())
@@ -86,26 +88,64 @@ fn extract_trpfd(state: &mut State) -> Result<(), SVExtractorError> {
     Ok(())
 }
 
+fn vector_to_vec(vector: Vector<'_, u64>) -> Vec<u64> {
+    let mut vec = Vec::<u64>::new();
+
+    for i in 0..vector.len() {
+        vec.push(vector.get(i));
+    }
+
+    return vec;
+}
+
+fn read_rtpfs<'a>(rtpfs_path: &String, trpfs_buffer: &'a mut Vec::<u8>) -> Result<TRPFS<'a>, SVExtractorError> {
+    // Parse the rtpfs and deserialize it with flatbuffers
+    let mut trpfs_reader = BufReader::new(File::open(&rtpfs_path)?);
+    trpfs_reader.read_to_end(trpfs_buffer)?;
+    
+    return Ok(root_as_trpfs(trpfs_buffer).unwrap());
+}
+
+fn read_rtpfd<'a>(rtpfd_path: &String, trpfd_buffer: &'a mut Vec::<u8>) -> Result<TRPFD<'a>, SVExtractorError> {
+    // Parse the rtpfs and deserialize it with flatbuffers
+    let mut trpfd_reader = BufReader::new(File::open(&rtpfd_path)?);
+    trpfd_reader.read_to_end(trpfd_buffer)?;
+
+    let trpfd = root_as_trpfd(trpfd_buffer).unwrap();
+    
+    return Ok(trpfd);
+}
+
 fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
     println!("Extracting files to {} ...", &state.output);
-    let trpfd_str = read_to_string(format!("{}/data.json",&state.info))?;
-    let trpfs_str = read_to_string(format!("{}/fs_data_separated.json",&state.info))?;
     let mut data_reader = BufReader::new(File::open(&state.trpfs)?);
-    let trpfd: TRPFD = serde_json::from_str(&trpfd_str)?;
-    let mut trpfs: TRPFS = serde_json::from_str(&trpfs_str)?;
 
-    let file_count = trpfs.file_offsets.len();
+    // Parse the rtpfs and deserialize it with flatbuffers
+    let mut trpfs_buffer = Vec::<u8>::new();
+    let trpfs = read_rtpfs(&state.fs_trpfs, &mut trpfs_buffer)?;
+    // Get the hashes
+    let trpfs_hashes = vector_to_vec(trpfs.clone().hashes().unwrap());
+    // Get the file offsets
+    let mut trpfs_offsets = vector_to_vec(trpfs.clone().file_offsets().unwrap());
 
-    trpfs.file_offsets.push(state.init_offset);
+    // We get the len here because later will append the init offset to the list
+    let file_count = trpfs_offsets.len();
+
+    trpfs_offsets.push(state.init_offset);
+    
+    // Parse the rtpfd and deserialize it with flatbuffers
+    let mut trpfd_buffer = Vec::<u8>::new();
+    let trpfd = read_rtpfd(&state.trpfd, &mut trpfd_buffer)?;
+
 
     for i in 0..file_count {
-        let offset = trpfs.file_offsets[i];
-        let end_offset = trpfs.file_offsets[i + 1];
-        let name_hash = trpfs.hashes[i];
+        let offset = trpfs_offsets[i];
+        let end_offset = trpfs_offsets[i + 1];
+        let name_hash = trpfs_hashes[i];
 
         // just in case the there is no path 
         let mut path: Option<String> = None;
-        for j in &trpfd.paths {
+        for j in &trpfd.paths().unwrap() {
             if name_hash == fnv1a64(j, &mut state.hash_dict) {
                 if state.names_dict.contains_key(j) {
                     path = Some(format!("{}/{}", &state.output, &state.names_dict[j]));
@@ -134,42 +174,6 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
         }
     
     }
-    Ok(())
-}
-
-// Run the flatc extraction command
-fn extract_trpfs_flatc(state: & State) -> Result<(), SVExtractorError> {
-    // Set the paths arguments for the flatc tool
-    let trpfs_schema = format!("{}/trpfs.fbs",&state.schemas);
-    
-    // Execute flatc
-    Command::new(&state.flatc)
-    .arg("--raw-binary")
-    .arg("-o").arg(&state.info)
-    .arg("--strict-json")
-    .arg("--defaults-json")
-    .arg("-t").arg(trpfs_schema)
-    .arg("--").arg(&state.fs_trpfs)
-    .spawn()?.wait().unwrap();
-
-    Ok(())
-}
-
-// Run the flatc extraction command
-fn extract_trpfd_flatc(state: &State) -> Result<(), SVExtractorError> {
-    // Set the paths arguments for the flatc tool
-    let trpfd_schema = format!("{}/trpfd.fbs",&state.schemas);
-    
-    // Execute flatc
-    Command::new(&state.flatc)
-    .arg("--raw-binary")
-    .arg("-o").arg(&state.info)
-    .arg("--strict-json")
-    .arg("--defaults-json")
-    .arg("-t").arg(trpfd_schema)
-    .arg("--").arg(&state.trpfd)
-    .spawn()?.wait().unwrap();
-
     Ok(())
 }
 

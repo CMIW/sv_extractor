@@ -12,13 +12,7 @@ pub enum SVExtractorError{
     NotDir {
         path: String,
     },
-
-    #[error("No flatc binaries where found in the /bin folder")]
-    Missingfltac,
-
-    #[error("No oo2core dynamic library was found in the /bin folder")]
-    Missingoo2core,
-
+    
     #[error("Failed to decompress the data")]
     OodleDecompressError,
 
@@ -33,8 +27,4 @@ pub enum SVExtractorError{
     /// Represents all other cases of `std::convert::Infallible`.
     #[error(transparent)]
     Infallible(#[from] std::convert::Infallible),
-
-    /// Represents all other cases of `serde_json::Error`.
-    #[error(transparent)]
-    SerdeJsonError(#[from] serde_json::Error),
 }

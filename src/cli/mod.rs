@@ -1,3 +1,3 @@
-pub use self::cli::{Args, ExtractionOption, State, TRPFS, TRPFD, TRPAK, Compression, File};
+pub use self::cli::{Args, ExtractionOption, State};
 
 pub mod cli;

@@ -1,51 +1,64 @@
 use std::path::Path;
-use std::io::{Write};
-use std::process::Command;
-use std::fs::{File, create_dir_all, read_to_string};
+use flatbuffers::Vector;
+use std::fs::{File, create_dir_all};
+use std::io::{Read, Write, BufReader};
 
 use crate::error_handler::SVExtractorError;
-use crate::cli::{State, TRPAK, Compression};
+use crate::schemas::trpak_generated::trpak::*;
 
-pub fn extract(state: &mut State, file_str: &String) -> Result<(), SVExtractorError> {
-    extract_trpak_flatc(state, &file_str)?;
+pub fn extract(file_str: &String) -> Result<(), SVExtractorError> {
     write_files(&file_str)?;
     Ok(())
 }
 
-// Run the flatc extraction command
-fn extract_trpak_flatc(state: &State, file_str: &String) -> Result<(), SVExtractorError> {
-    // Set the paths arguments for the flatc tool
-    let trpak_schema = format!("{}/trpak.fbs",&state.schemas);
-    let output = Path::new(&file_str).parent().unwrap();
-    
-    // Execute flatc
-    Command::new(&state.flatc)
-    .arg("--raw-binary")
-    .arg("-o").arg(output)
-    .arg("--strict-json")
-    .arg("--defaults-json")
-    .arg("-t").arg(&trpak_schema)
-    .arg("--").arg(&file_str)
-    .spawn()?.wait().unwrap();
+fn vector_to_vec64(vector: Vector<'_, u64>) -> Vec<u64> {
+    let mut vec = Vec::<u64>::new();
 
-    Ok(())
+    for i in 0..vector.len() {
+        vec.push(vector.get(i));
+    }
+
+    return vec;
 }
 
-fn write_files(file_str: &String) -> Result<(), SVExtractorError> {
-    let json_path = Path::new(&file_str).with_extension("json");
-    let trpak_str = read_to_string(&json_path)?;
-    let trpak: TRPAK = serde_json::from_str(&trpak_str)?;
+fn vector_to_vec8(vector: Vector<'_, u8>) -> Vec<u8> {
+    let mut vec = Vec::<u8>::new();
 
-    for i in 0..trpak.files.len() {
-        let new_file = json_path.with_extension("").join(format!("{:x}",trpak.hashes[i]));
-        let mut data = trpak.files[i].data.clone();
-        let mut out = vec![0u8; trpak.files[i].decompressed_size.try_into()?];
+    for i in 0..vector.len() {
+        vec.push(vector.get(i));
+    }
+
+    return vec;
+}
+
+fn read_rtpak<'a>(trpak_path: &String, trpak_buffer: &'a mut Vec::<u8>) -> Result<TRPAK<'a>, SVExtractorError> {
+    // Parse the rtpfs and deserialize it with flatbuffers
+    let mut trpak_reader = BufReader::new(File::open(&trpak_path)?);
+    trpak_reader.read_to_end(trpak_buffer)?;
+    
+    return Ok(root_as_trpak(trpak_buffer).unwrap());
+}
+
+fn write_files(file_path: &String) -> Result<(), SVExtractorError> {
+    // Parse the rtpfs and deserialize it with flatbuffers
+    let mut trpak_buffer = Vec::<u8>::new();
+
+    let _trpak = read_rtpak(file_path, &mut trpak_buffer)?;
+    let trpak_hashes = vector_to_vec64(_trpak.clone().hashes().unwrap());
+    let trpak_files = _trpak.clone().files().unwrap();
+
+    //println!("{:?}", trpak_files.len());
+
+    for i in 0..trpak_files.len() {
+        let new_file = Path::new(&file_path).with_extension("").join(format!("{:x}",trpak_hashes[i]));
+        let mut data = vector_to_vec8(trpak_files.get(i).data().clone().unwrap());
+        let mut out = vec![0u8; trpak_files.get(i).decompressed_size().try_into()?];
         
-        if trpak.files[i].compression_type == Compression::OODLE {
+        if trpak_files.get(i).compression_type() == Compression::OODLE {
             unsafe{
                 let result = ooz_sys::Kraken_Decompress(data.as_ptr(), data.len(), out.as_mut_ptr(), out.len());
                 
-                if result != trpak.files[i].decompressed_size as i32 {
+                if result != trpak_files.get(i).decompressed_size() as i32 {
                     return Err(SVExtractorError::OodleDecompressError)
                 }
                 data = out;

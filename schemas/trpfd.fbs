@@ -1,4 +1,5 @@
 file_extension "trpfd";
+namespace trpfd;
 
 table InfoTable {
 	size: uint64;

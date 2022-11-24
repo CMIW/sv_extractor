@@ -1,4 +1,5 @@
 file_extension "trpak";
+namespace trpak;
 
 enum Compression : uint8 {
 	OODLE = 3,
