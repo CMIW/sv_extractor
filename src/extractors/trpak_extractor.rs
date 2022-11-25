@@ -33,10 +33,12 @@ fn vector_to_vec8(vector: Vector<'_, u8>) -> Vec<u8> {
 
 fn read_rtpak<'a>(trpak_path: &String, trpak_buffer: &'a mut Vec::<u8>) -> Result<TRPAK<'a>, SVExtractorError> {
     // Parse the rtpfs and deserialize it with flatbuffers
+    println!("test0");
     let mut trpak_reader = BufReader::new(File::open(&trpak_path)?);
+    println!("test1");
     trpak_reader.read_to_end(trpak_buffer)?;
-    
-    return Ok(root_as_trpak(trpak_buffer).unwrap());
+    println!("test2");
+    return Ok(root_as_trpak(trpak_buffer)?);
 }
 
 fn write_files(file_path: &String) -> Result<(), SVExtractorError> {

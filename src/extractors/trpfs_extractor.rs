@@ -102,7 +102,7 @@ fn read_rtpfs<'a>(rtpfs_path: &String, trpfs_buffer: &'a mut Vec::<u8>) -> Resul
     let mut trpfs_reader = BufReader::new(File::open(&rtpfs_path)?);
     trpfs_reader.read_to_end(trpfs_buffer)?;
     
-    return Ok(root_as_trpfs(trpfs_buffer).unwrap());
+    return Ok(root_as_trpfs(trpfs_buffer)?);
 }
 
 // Reads the .rtpfd file and deserialize it into a TRPFd struct
@@ -111,9 +111,7 @@ fn read_rtpfd<'a>(rtpfd_path: &String, trpfd_buffer: &'a mut Vec::<u8>) -> Resul
     let mut trpfd_reader = BufReader::new(File::open(&rtpfd_path)?);
     trpfd_reader.read_to_end(trpfd_buffer)?;
 
-    let trpfd = root_as_trpfd(trpfd_buffer).unwrap();
-    
-    return Ok(trpfd);
+    return Ok(root_as_trpfd(trpfd_buffer)?);
 }
 
 // Writes all the files decompressed from the .rtpfs and .rtpfd files

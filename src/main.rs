@@ -17,7 +17,7 @@ fn main() {
 
     // Verify that the romfs, .trpak path exists
 	if !Path::new(&args.path).exists() {
-		eprintln!("{}", SVExtractorError::NotDir{path: args.path.clone()});
+		eprintln!("{}", SVExtractorError::NoDirectory{path: args.path.clone()});
 		process::exit(1);
 	}
 
@@ -27,24 +27,29 @@ fn main() {
 
     		// Validate that the needed paths exist
 		    if !Path::new(&state.trpfs).exists() {
-		        eprintln!("{}", SVExtractorError::NotDir{path: state.trpfs});
+		        eprintln!("{}", SVExtractorError::NoDirectory{path: state.trpfs});
 		        process::exit(1);
 		    }
 		    if !Path::new(&state.trpfd).exists() {
-		        eprintln!("{}", SVExtractorError::NotDir{path: state.trpfd});
+		        eprintln!("{}", SVExtractorError::NoDirectory{path: state.trpfd});
 		        process::exit(1);
 		    }
 
 		    // Execute the extraction
     		trpfs_extractor::extract(&mut state).unwrap_or_else(|err| {
-		        eprintln!("{}", err);
+		        process_errors(err);
 		        process::exit(1);
 		    }); 
     	},
     	ExtractionOption::TRPAK => { 
+    		if !Path::new(&args.path).is_file() {
+				eprintln!("{}", SVExtractorError::IsADirectory{path: args.path.clone()});
+				process::exit(1);
+			}
+    		
     		// Execute the extraction
     		trpak_extractor::extract(&args.path).unwrap_or_else(|err| {
-		        eprintln!("{}", err);
+		        process_errors(err);
 		        process::exit(1);
 		    }); 
     	},
@@ -53,16 +58,16 @@ fn main() {
 
     		// Validate that the needed paths exist
 		    if !Path::new(&state.trpfs).exists() {
-		        eprintln!("{}", SVExtractorError::NotDir{path: state.trpfs});
+		        eprintln!("{}", SVExtractorError::NoDirectory{path: state.trpfs});
 		        process::exit(1);
 		    }
 		    if !Path::new(&state.trpfd).exists() {
-		        eprintln!("{}", SVExtractorError::NotDir{path: state.trpfd});
+		        eprintln!("{}", SVExtractorError::NoDirectory{path: state.trpfd});
 		        process::exit(1);
 		    }
 
 		    full_extractor::extract(&mut state).unwrap_or_else(|err| {
-		        eprintln!("{}", err);
+		        process_errors(err);
 		        process::exit(1);
 		    }); 
     	},
@@ -70,4 +75,12 @@ fn main() {
 
     println!("Extraction complete!");
     
+}
+
+// Handle some especific errors
+fn process_errors(err: SVExtractorError){
+	match err {
+		SVExtractorError::InvalidFlatbuffer(_) => eprintln!("Invalid file, expected: data.trpfs, data.trpfd or *.tprak from Pokemon Scarlet or Violet"),
+		_ => eprintln!("{}", err),
+	}
 }

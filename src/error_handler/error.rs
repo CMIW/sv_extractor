@@ -9,7 +9,12 @@ pub enum SVExtractorError{
 	},
 
     #[error("Directory {path:?} doesn't exists")]
-    NotDir {
+    NoDirectory {
+        path: String,
+    },
+
+    #[error("{path:?} is a directory, expected a file")]
+    IsADirectory {
         path: String,
     },
 
@@ -33,4 +38,8 @@ pub enum SVExtractorError{
     /// Represents all other cases of `std::convert::Infallible`.
     #[error(transparent)]
     Infallible(#[from] std::convert::Infallible),
+
+    /// Represents all other cases of `flatbuffers::InvalidFlatbuffer`.
+    #[error(transparent)]
+    InvalidFlatbuffer(#[from] flatbuffers::InvalidFlatbuffer),
 }
