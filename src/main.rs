@@ -15,17 +15,15 @@ fn main() {
     // Create a new app state
     let mut state = State::new(&args);
 
+    // Verify that the romfs, .trpak path exists
+	if !Path::new(&args.path).exists() {
+		eprintln!("{}", SVExtractorError::NotDir{path: args.path.clone()});
+		process::exit(1);
+	}
+
     match args.extraction {
     	ExtractionOption::TRPFS => { 
-    		// Verify that the romfs path exists
-		    if let Some(path) = &args.romfs {
-		    	if !Path::new(path).exists() {
-			    	eprintln!("{}", SVExtractorError::NotDir{path: path.clone()});
-			    	process::exit(1);
-			    }
-		    }
-
-		    state.add_romfs(&args);
+    		state.add_romfs(&args.path);
 
     		// Validate that the needed paths exist
 		    if !Path::new(&state.trpfs).exists() {
@@ -44,30 +42,14 @@ fn main() {
 		    }); 
     	},
     	ExtractionOption::TRPAK => { 
-    		// Vefiry that the .trpak path exists
-		    if let Some(path) = &args.trpak {
-		    	if !Path::new(path).exists() {
-			    	eprintln!("{}", SVExtractorError::NotDir{path: path.clone()});
-			    	process::exit(1);
-			    }
-		    }
-		    
-		    // Execute the extraction
-    		trpak_extractor::extract(&args.trpak.unwrap()).unwrap_or_else(|err| {
+    		// Execute the extraction
+    		trpak_extractor::extract(&args.path).unwrap_or_else(|err| {
 		        eprintln!("{}", err);
 		        process::exit(1);
 		    }); 
     	},
     	ExtractionOption::FULL => {
-    		// Verify that the romfs path exists
-		    if let Some(path) = &args.romfs {
-		    	if !Path::new(path).exists() {
-			    	eprintln!("{}", SVExtractorError::NotDir{path: path.clone()});
-			    	process::exit(1);
-			    }
-		    }
-
-		    state.add_romfs(&args);
+    		state.add_romfs(&args.path);
 
     		// Validate that the needed paths exist
 		    if !Path::new(&state.trpfs).exists() {

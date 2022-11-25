@@ -12,6 +12,12 @@ pub enum SVExtractorError{
     NotDir {
         path: String,
     },
+
+    #[error("Wrong extension, expected {expected:?} but found {found:?}")]
+    WrongExtension{
+        expected: String,
+        found: String,
+    },
     
     #[error("Failed to decompress the data")]
     OodleDecompressError,

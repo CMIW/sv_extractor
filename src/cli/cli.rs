@@ -7,13 +7,12 @@ use std::collections::HashMap;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
+	/// The path to the romfs folder or .trpak file 
 	#[arg(short, long)]
-	pub romfs: Option<String>,
-
-	#[arg(short, long)]
-	pub trpak: Option<String>,
+	pub path: String,
 	
-	#[arg(short, long,default_value_t = env::current_dir().unwrap().join("output").to_str().unwrap().to_string())]
+	/// The path were the extracted files should be placed
+	#[arg(short, long, default_value_t = env::current_dir().unwrap().join("output").to_str().unwrap().to_string())]
 	pub output: String,
 	
 	#[arg(short, long, value_enum)]
@@ -27,7 +26,7 @@ pub enum ExtractionOption{
 	TRPFS,
 	/// TRPAK Extraction
 	TRPAK,
-	// Full Extraction (Note: this might take a while)
+	/// Full Extraction (Note: this will take a while)
 	FULL,
 }
 
@@ -58,12 +57,10 @@ impl State {
 		}
 	}
 
-	pub fn add_romfs(&mut self, args: &Args) -> &Self {
-		let romfs_dinding = args.romfs.as_ref().unwrap().to_string();
-
-		self.romfs = romfs_dinding.clone(); 
-		self.trpfs = Path::new(&romfs_dinding.clone()).join("arc/data.trpfs").to_str().unwrap().to_string();
-    	self.trpfd = Path::new(&romfs_dinding.clone()).join("arc/data.trpfd").to_str().unwrap().to_string();
+	pub fn add_romfs(&mut self, path: &str) -> &Self {
+		self.romfs = path.to_string(); 
+		self.trpfs = Path::new(path).join("arc/data.trpfs").to_str().unwrap().to_string();
+    	self.trpfd = Path::new(path).join("arc/data.trpfd").to_str().unwrap().to_string();
     	
     	self
 	}
