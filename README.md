@@ -19,34 +19,31 @@ None, just download the binaries for your system from the [latest release](https
 
 Linux examples:
 ```
-./sv_extractor --path <path to romfs folder> --output <path> --extraction trpfs
+./sv_extractor --romfs <path to romfs folder> --output <path> --extraction trpfs
 ```
 
 ```
-./sv_extractor --path <path to .trpak file> --output <path> --extraction trpak
+./sv_extractor --trpak <path to trpak> --output <path> --extraction trpak
 ```
 
 ```
-./sv_extractor --path <path to romfs folder> --output <path> --extraction full
+./sv_extractor --romfs <path to romfs folder> --output <path> --extraction full
 ```
 
 Windows examples:
 ```
-sv_extractor.exe --path <path to romfs folder> --output <path> --extraction trpfs
+sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction trpfs
 ```
 
 ```
-sv_extractor.exe --path <path to .trpak file> --output <path> --extraction trpak
+sv_extractor.exe --trpak <path to trpak> --output <path> --extraction trpak
 ```
 
 ```
-sv_extractor.exe --path <path to romfs folder> --output <path> --extraction full
+sv_extractor.exe --romfs <path to romfs folder> --output <path> --extraction full
 ```
 
 ## Extraction options
 0. trpfs
 1. trpak
 2. full
-
-## Notes
-* When extracting trpak's either individually or with the full extraction, the decompressed files will be in the same directory as the compressed file.
