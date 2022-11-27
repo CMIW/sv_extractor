@@ -48,7 +48,7 @@ fn main() {
 			}
     		
     		// Execute the extraction
-    		trpak_extractor::extract(&args.path).unwrap_or_else(|err| {
+    		trpak_extractor::extract(&mut state, &args.path).unwrap_or_else(|err| {
 		        process_errors(err);
 		        process::exit(1);
 		    }); 

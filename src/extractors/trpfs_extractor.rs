@@ -179,7 +179,7 @@ fn write_files(state: &mut State) -> Result<(), SVExtractorError> {
     Ok(())
 }
 
-fn fnv1a64(_str: &str, hash_map: &mut HashMap<String, u128>) -> u64 {
+pub fn fnv1a64(_str: &str, hash_map: &mut HashMap<String, u128>) -> u64 {
     if hash_map.contains_key(_str) {
         return hash_map[_str].try_into().unwrap();
     }

@@ -149,7 +149,7 @@ arc/world/obj_template/parts/envmeteor_meteor_1.trsot.trpak
 arc/world/obj_template/parts/envmeteor_meteor_0.trsot.trpak
 arc/world/data/uinet_battle/net_battle_rule_paramnet_battle_rule_param_array.bin.trpak
 arc/world/data/trainer/trtype/trtype_array.bfbs.trpak
-arc/world/data/system/object_generation_rangeobject_generation_range_array.bin.trpak
+arc/world/data/system/object_generation_range/object_generation_range_array.bin.trpak
 arc/world/data/stain/high_prec_stain_datamud_player.bin.trpak
 arc/world/data/raid/delivery_raid_priority/delivery_raid_priority_array.bin.trpak
 arc/world/data/pokeobj/pokeobj_param/pokeobj_param_array.bin.trpak
