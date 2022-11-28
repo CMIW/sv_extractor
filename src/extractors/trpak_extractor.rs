@@ -61,7 +61,7 @@ fn write_files(state: &mut State, file_path: &String) -> Result<(), SVExtractorE
         let new_file: _;
         match unhashed {
             Some(nohash) => new_file = Path::new(&format!("{}/arc/{}", &state.output, nohash)).to_str().unwrap().to_string(),
-            None => new_file = Path::new(&file_path).parent().unwrap().join(format!("{:x}",trpak_hashes[i])).to_str().unwrap().to_string(),
+            None => new_file = Path::new(&file_path).with_extension("").with_extension("").join(format!("{:x}",trpak_hashes[i])).to_str().unwrap().to_string(),
         }
         
         let mut data = vector_to_vec8(trpak_files.get(i).data().clone().unwrap());
