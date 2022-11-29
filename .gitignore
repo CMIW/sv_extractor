@@ -2,6 +2,7 @@
 /target
 /output
 /info/backup
+/tools
 *flatc
 *.json
 *.trpfs
