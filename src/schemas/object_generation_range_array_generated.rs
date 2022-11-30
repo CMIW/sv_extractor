@@ -2,12 +2,20 @@
 
 
 // @generated
-
 use core::mem;
 use core::cmp::Ordering;
 
 extern crate flatbuffers;
 use self::flatbuffers::{EndianScalar, Follow};
+
+#[allow(unused_imports, dead_code, non_snake_case)]
+pub mod ogra {
+
+  use core::mem;
+  use core::cmp::Ordering;
+
+  extern crate flatbuffers;
+  use self::flatbuffers::{EndianScalar, Follow};
 
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 pub const ENUM_MIN_OBJECT_TYPE: i32 = -1;
@@ -475,4 +483,5 @@ pub fn finish_object_generation_range_array_buffer<'a, 'b>(
 #[inline]
 pub fn finish_size_prefixed_object_generation_range_array_buffer<'a, 'b>(fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>, root: flatbuffers::WIPOffset<ObjectGenerationRangeArray<'a>>) {
   fbb.finish_size_prefixed(root, None);
+}
 }
